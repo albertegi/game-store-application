@@ -1,5 +1,7 @@
 package com.alvirg.store.notification;
 
+import com.alvirg.store.common.BaseEntity;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Notification {
+@Entity
+public class Notification extends BaseEntity {
     private String message;
     private String receiver;
     private NotificationLevel level;

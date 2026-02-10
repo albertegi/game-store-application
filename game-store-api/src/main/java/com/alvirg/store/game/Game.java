@@ -1,5 +1,7 @@
 package com.alvirg.store.game;
 
+import com.alvirg.store.common.BaseEntity;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
@@ -9,7 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Game {
+@Entity
+public class Game extends BaseEntity {
     private String title;
 
     @Enumerated(value = EnumType.STRING)

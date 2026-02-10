@@ -1,5 +1,7 @@
 package com.alvirg.store.comment;
 
+import com.alvirg.store.common.BaseEntity;
+import jakarta.persistence.Entity;
 import lombok.*;
 
 @Getter
@@ -7,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Comment {
+@Entity
+public class Comment extends BaseEntity {
     private String comment;
 }

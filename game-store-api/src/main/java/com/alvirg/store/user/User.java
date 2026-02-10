@@ -1,5 +1,7 @@
 package com.alvirg.store.user;
 
+import com.alvirg.store.common.BaseEntity;
+import jakarta.persistence.Entity;
 import lombok.*;
 
 @Getter
@@ -7,7 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+@Entity
+public class User extends BaseEntity {
     private String firstName;
     private String lastName;
     private String email;
