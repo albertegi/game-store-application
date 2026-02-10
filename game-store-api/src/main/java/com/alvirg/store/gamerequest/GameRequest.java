@@ -1,9 +1,8 @@
 package com.alvirg.store.gamerequest;
 
 import com.alvirg.store.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.alvirg.store.user.User;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -17,4 +16,8 @@ public class GameRequest extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
     private RequestStatus status = RequestStatus.PENDING;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
