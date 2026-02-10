@@ -30,7 +30,7 @@ public class Game extends BaseEntity {
     @OneToMany(mappedBy = "game")
     private List<Comment> comments;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "game_wishlist",
             joinColumns = {
@@ -44,7 +44,24 @@ public class Game extends BaseEntity {
                     )
             }
     )
+
+    /** select g.* from
+    Game g
+     Inner join game_wishlist gw on gw.game_id = g.id
+     Inner join WishLight w on w.id = gw.wishlist_id
+     **/
+
     private List<WishList> wishLists;
+
+    public void addWishList(WishList wishList){
+        this.wishLists.add(wishList); // adding a wishlist to the game
+        wishList.getGames().add(this);
+    }
+
+    public void removeWishList(WishList wishList){
+        this.wishLists.remove(wishList);
+        wishList.getGames().remove(this);
+    }
 
 
 }

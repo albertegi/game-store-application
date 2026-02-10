@@ -4,6 +4,7 @@ import com.alvirg.store.common.BaseEntity;
 import com.alvirg.store.game.Game;
 import com.alvirg.store.user.User;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import lombok.*;
@@ -22,7 +23,7 @@ public class WishList extends BaseEntity {
     @OneToOne
     private User user;
 
-    @ManyToMany(mappedBy = "wishLists")
+    @ManyToMany(mappedBy = "wishLists", fetch = FetchType.EAGER)
     private List<Game> games;
 
 }
