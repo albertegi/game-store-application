@@ -25,3 +25,10 @@ replay_pid*
 
 # Ignoring .env
 .env
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
