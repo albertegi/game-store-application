@@ -3,8 +3,6 @@ package com.alvirg.store.category;
 import com.alvirg.store.common.BaseEntity;
 import com.alvirg.store.game.Game;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.*;
 
