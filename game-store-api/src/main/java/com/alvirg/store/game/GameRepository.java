@@ -37,10 +37,20 @@ public interface GameRepository extends JpaRepository<Game, String> {
     List<Game> findAllByCategoryName(String name);
 
     // find all games by category using jpql syntax
-    @Query(
+    /*@Query(
             """
             SELECT g FROM Game g
             INNER JOIN Category c ON g.category.id = c.id
+            WHERE c.name LIKE :catName
+            """
+    )
+    List<Game> findAllByCat(@Param("catName") String catName);*/
+
+    // find all games by category using jpql syntax
+    @Query(
+            """
+            SELECT g FROM Game g
+            INNER JOIN g.category c
             WHERE c.name LIKE :catName
             """
     )

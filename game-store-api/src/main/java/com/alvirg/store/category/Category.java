@@ -4,6 +4,7 @@ import com.alvirg.store.common.BaseEntity;
 import com.alvirg.store.game.Game;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "CATEGORY_TBL")
 public class Category extends BaseEntity {
 
     private String name;

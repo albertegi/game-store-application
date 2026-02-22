@@ -28,4 +28,14 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
             """
     )
     List<Category> findAllByName(@Param("catName") String categoryName);
+
+
+    // find all categories using native queries
+    @Query(value = """
+                SELECT * FROM category CATEGORY_TBL
+                WHERE name LIKE :catName ORDER BY name ASC
+                """, nativeQuery = true)
+    List<Category> findAllByNameUsingNativeQuery(@Param("catName") String categoryName);
+
+
 }
