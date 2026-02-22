@@ -2,6 +2,8 @@ package com.alvirg.store.game;
 
 import com.alvirg.store.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -33,4 +35,14 @@ public interface GameRepository extends JpaRepository<Game, String> {
 
      */
     List<Game> findAllByCategoryName(String name);
+
+    // find all games by category using jpql syntax
+    @Query(
+            """
+            SELECT g FROM Game g
+            INNER JOIN Category c ON g.category.id = c.id
+            WHERE c.name LIKE :catName
+            """
+    )
+    List<Game> findAllByCat(@Param("catName") String catName);
 }
