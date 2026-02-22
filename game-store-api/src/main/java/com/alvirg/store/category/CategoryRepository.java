@@ -1,6 +1,7 @@
 package com.alvirg.store.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -16,4 +17,14 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
      * Disadvantage: Method name is too long
      */
     List<Category> findAllByNameStartingWithIgnoreCaseOOrderByNameAsc(String name);
+
+    // JPQL syntax
+    @Query(
+            """
+            SELECT c FROM Category c
+            WHERE c.name LIKE lower(:name)
+            ORDER BY c.name ASC
+            """
+    )
+    List<Category> findAllByName(String name);
 }
