@@ -2,13 +2,11 @@ package com.alvirg.store.game;
 
 import com.alvirg.store.common.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +21,7 @@ public class GameService {
         gameRepository.transformGamesTitleToUpperCase();
     }
 
+    // example for pagination
     public PageResponse<Game> pagedResult(final int pageNumber, final int size){
 
         Pageable pageable = PageRequest.of(pageNumber,
@@ -40,10 +39,84 @@ public class GameService {
                 .last(pagedResult.isLast())
                 .first(pagedResult.isFirst())
                 .build();
+    }
+
+    // example for using QueryByExample
+    public void queryByExampleCaseSensitive(){
+        // find a specific game by title, assuming the title is unique in database
+
+        // create an object of Game: which may be the probe
+        Game game = new Game();
+        game.setTitle("The witcher III"); // It automatically handles case sensitivity: So in case in my DB --> the witcher iii, it will not return anything
+        game.setSupportedPlatforms(SupportedPlatforms.PS);
+
+        // create the example of type Game
+        Example<Game> example = Example.of(game);
+
+        Optional<Game> gameTitle = gameRepository.findOne(example);
+    }
+     // example for using QueryByExample
+    public void queryByExampleCaseInSensitive(){
+        // find a specific game by title, assuming the title is unique in database
+
+        // create an object of Game: which may be the probe
+        Game game = new Game();
+        game.setTitle("The witcher III"); // It automatically handles case sensitivity: So in case in my DB --> the witcher iii, it will not return anything
+        game.setSupportedPlatforms(SupportedPlatforms.PS);
+
+        ExampleMatcher matcher = ExampleMatcher.matchingAll().withIgnoreCase();
+
+        // create the example of type Game
+        Example<Game> example = Example.of(game, matcher);
+
+        Optional<Game> gameTitle = gameRepository.findOne(example);
+    }public void queryByExampleCustomMatching(){
+        // find a specific game by title, assuming the title is unique in database
+
+        // create an object of Game: which may be the probe
+        Game game = new Game();
+        game.setTitle("witcher"); // all games title containing witcher
+        game.setSupportedPlatforms(SupportedPlatforms.PS); // ignoring case for this
+
+        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+                .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("supportedPlatforms", ExampleMatcher.GenericPropertyMatchers.exact());
+
+        // create the example of type Game
+        Example<Game> example = Example.of(game, matcher);
+        /*
+            The output query
+            select * from game
+            where lower(title) like '%witcher%'
+            and supportedPlatforms = 'PS'
+         */
+
+        List<Game> gameTitle = gameRepository.findAll(example);
+    }
+
+    public void queryByExampleIgnoringProperties(){
+        Game game = new Game();
+        game.setTitle("The witcher III"); // filter everything, but ignoring some fields
+
+        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+                .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withIgnorePaths("supportedPlatforms", "coverPicture");
+
+        Example<Game> example = Example.of(game, matcher);
+        List<Game> gameTitle = gameRepository.findAll(example);
+
+        /*
+            Limitations of query by Example Executor
+            (1) Nesting and grouping statements are not supported. e.g.
+            --> select * from game where (title = ?0 and supportedPlatforms = ?1) OR coverPicture is not null
+            (2) String matching only includes exact, case-sensitive, starts, ends, contains and regex
+            (3) All types other than String are exact-match only
+
+         */
+
+
 
 
     }
-
-
 
 }
