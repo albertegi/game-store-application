@@ -2,6 +2,7 @@ package com.alvirg.store.game;
 
 import com.alvirg.store.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -25,7 +26,7 @@ public interface GameRepository extends JpaRepository<Game, String> {
     List<Game> findAllByCategory(Category category);
 
     // find all games by category (v2)
-    List<Game> findAllByCategoryId(String CategoryId);
+    List<Game> findAllByCategoryId(String categoryId);
 
     // find all the games where the name equals 'Actions' in the Category table
     /*
@@ -55,4 +56,10 @@ public interface GameRepository extends JpaRepository<Game, String> {
             """
     )
     List<Game> findAllByCat(@Param("catName") String catName);
+
+    @Query("""
+            UPDATE Game SET title = upper(title)
+            """)
+    @Modifying
+    void transformGamesTitleToUpperCase();
 }

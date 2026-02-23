@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.NamedQuery;
 
 import java.util.List;
 
@@ -16,6 +17,10 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "CATEGORY_TBL")
+@NamedQuery(name = "Category.findByName",
+        query = "SELECT c FROM Category c " +
+                "WHERE c.name LIKE lower(:catName)" +
+                "ORDER BY c.name ASC")
 public class Category extends BaseEntity {
 
     private String name;

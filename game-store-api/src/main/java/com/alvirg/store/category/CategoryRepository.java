@@ -20,6 +20,7 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
     List<Category> findAllByNameStartingWithIgnoreCaseOOrderByNameAsc(String name);
 
     // JPQL syntax
+    // advantages: query is validated at run time
     @Query(
             """
             SELECT c FROM Category c
@@ -36,6 +37,10 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
                 WHERE name LIKE :catName ORDER BY name ASC
                 """, nativeQuery = true)
     List<Category> findAllByNameUsingNativeQuery(@Param("catName") String categoryName);
+
+
+    @Query(name = "Category.findByName")
+    List<Category> findAllByNameQuery(@Param("CatName") String categoryName);
 
 
 }
