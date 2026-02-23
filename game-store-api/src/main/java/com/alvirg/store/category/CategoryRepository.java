@@ -39,8 +39,9 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
     List<Category> findAllByNameUsingNativeQuery(@Param("catName") String categoryName);
 
 
-    @Query(name = "Category.findByName")
-    List<Category> findAllByNameQuery(@Param("CatName") String categoryName);
+    // named query used here
+    @Query(name = "Category.namedQueryFindByName")
+    List<Category> findAllByNamedQuery(@Param("CatName") String categoryName);
 
 
 }

@@ -28,6 +28,7 @@ public class Game extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "game")
+    @OrderBy(value = "content") // ordering all your contents in game when getting the comments may be for a particular game
     private List<Comment> comments;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -62,6 +63,11 @@ public class Game extends BaseEntity {
         this.wishLists.remove(wishList);
         wishList.getGames().remove(this);
     }
+
+    // paging
+// Why paging: improve performance
+// fetching and sending the whole data from db can be very slow
+// we need to get the page number and the size
 
 
 }

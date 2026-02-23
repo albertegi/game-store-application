@@ -1,6 +1,8 @@
 package com.alvirg.store.game;
 
 import com.alvirg.store.category.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,7 +37,7 @@ public interface GameRepository extends JpaRepository<Game, String> {
         where c.name = 'Action'
 
      */
-    List<Game> findAllByCategoryName(String name);
+//    List<Game> findAllByCategoryName(String name);
 
     // find all games by category using jpql syntax
     /*@Query(
@@ -62,4 +64,11 @@ public interface GameRepository extends JpaRepository<Game, String> {
             """)
     @Modifying
     void transformGamesTitleToUpperCase();
+
+
+
+
+    // implementing pageable
+
+    Page<Game> findAllByCategoryName(String categoryName, Pageable pageable);
 }
