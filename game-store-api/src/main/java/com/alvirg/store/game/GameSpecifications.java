@@ -1,5 +1,6 @@
 package com.alvirg.store.game;
 
+import com.alvirg.store.platform.Console;
 import org.springframework.data.jpa.domain.Specification;
 
 public class GameSpecifications {
@@ -10,7 +11,7 @@ public class GameSpecifications {
                 criteriaBuilder.equal(root.get("title"), gameTitle));
     }
 
-    public static Specification<Game> bySupportedPlatforms(SupportedPlatforms platforms){
+    public static Specification<Game> bySupportedPlatforms(Console platforms){
         return ((root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("platform"), platforms));
     }

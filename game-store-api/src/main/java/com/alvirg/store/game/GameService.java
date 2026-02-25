@@ -1,6 +1,7 @@
 package com.alvirg.store.game;
 
 import com.alvirg.store.common.PageResponse;
+import com.alvirg.store.platform.Console;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -50,7 +51,7 @@ public class GameService {
         // create an object of Game: which may be the probe
         Game game = new Game();
         game.setTitle("The witcher III"); // It automatically handles case sensitivity: So in case in my DB --> the witcher iii, it will not return anything
-        game.setSupportedPlatforms(SupportedPlatforms.PS);
+        game.setSupportedPlatforms(Console.PS);
 
         // create the example of type Game
         Example<Game> example = Example.of(game);
@@ -64,7 +65,7 @@ public class GameService {
         // create an object of Game: which may be the probe
         Game game = new Game();
         game.setTitle("The witcher III"); // It automatically handles case sensitivity: So in case in my DB --> the witcher iii, it will not return anything
-        game.setSupportedPlatforms(SupportedPlatforms.PS);
+        game.setSupportedPlatforms(Console.PS);
 
         ExampleMatcher matcher = ExampleMatcher.matchingAll().withIgnoreCase();
 
@@ -78,7 +79,7 @@ public class GameService {
         // create an object of Game: which may be the probe
         Game game = new Game();
         game.setTitle("witcher"); // all games title containing witcher
-        game.setSupportedPlatforms(SupportedPlatforms.PS); // ignoring case for this
+        game.setSupportedPlatforms(Console.PS); // ignoring case for this
 
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
@@ -118,17 +119,17 @@ public class GameService {
     }
 
     public void specificationExample1(){
-        Specification<Game> spec = buildSpecificationWithAndOperator("witcher", SupportedPlatforms.PC);
+        Specification<Game> spec = buildSpecificationWithAndOperator("witcher", Console.PC);
 
         List<Game> games = gameRepository.findAll(spec);
     }
     public void specificationExample2(){
-        Specification<Game> spec = buildSpecificationWithOrOperator("witcher", SupportedPlatforms.PC);
+        Specification<Game> spec = buildSpecificationWithOrOperator("witcher", Console.PC);
 
         List<Game> games = gameRepository.findAll(spec);
     }
 
-    private Specification<Game> buildSpecificationWithAndOperator(String title, SupportedPlatforms platforms) {
+    private Specification<Game> buildSpecificationWithAndOperator(String title, Console platforms) {
         Specification<Game> spec = Specification.unrestricted();
 
         if (StringUtils.hasLength(title)) {
@@ -142,7 +143,7 @@ public class GameService {
         return spec;
     }
 
-    private Specification<Game> buildSpecificationWithOrOperator(String title, SupportedPlatforms platforms) {
+    private Specification<Game> buildSpecificationWithOrOperator(String title, Console platforms) {
         Specification<Game> spec = Specification.unrestricted();
 
         if (StringUtils.hasLength(title)) {

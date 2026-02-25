@@ -3,6 +3,8 @@ package com.alvirg.store.game;
 import com.alvirg.store.category.Category;
 import com.alvirg.store.comment.Comment;
 import com.alvirg.store.common.BaseEntity;
+import com.alvirg.store.platform.Console;
+import com.alvirg.store.platform.Platform;
 import com.alvirg.store.wishlist.WishList;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +21,7 @@ public class Game extends BaseEntity {
     private String title;
 
     @Enumerated(value = EnumType.STRING)
-    private SupportedPlatforms supportedPlatforms;
+    private Console supportedPlatforms;
 
     private String coverPicture;
 
@@ -31,7 +33,21 @@ public class Game extends BaseEntity {
     @OrderBy(value = "content") // ordering all your contents in game when getting the comments may be for a particular game
     private List<Comment> comments;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "game_platform",
+            joinColumns = {
+                    @JoinColumn(name = "game_id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(
+                            name = "platform_id"
+                    )
+            }
+    )
+    private List<Platform> platforms;
+
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "game_wishlist",
             joinColumns = {
