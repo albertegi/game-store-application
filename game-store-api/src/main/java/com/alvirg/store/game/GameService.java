@@ -3,7 +3,9 @@ package com.alvirg.store.game;
 import com.alvirg.store.common.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -113,10 +115,45 @@ public class GameService {
             (3) All types other than String are exact-match only
 
          */
+    }
 
+    public void specificationExample1(){
+        Specification<Game> spec = buildSpecificationWithAndOperator("witcher", SupportedPlatforms.PC);
 
+        List<Game> games = gameRepository.findAll(spec);
+    }
+    public void specificationExample2(){
+        Specification<Game> spec = buildSpecificationWithOrOperator("witcher", SupportedPlatforms.PC);
 
+        List<Game> games = gameRepository.findAll(spec);
+    }
 
+    private Specification<Game> buildSpecificationWithAndOperator(String title, SupportedPlatforms platforms) {
+        Specification<Game> spec = Specification.unrestricted();
+
+        if (StringUtils.hasLength(title)) {
+            spec = spec.and(GameSpecifications.byTitle(title));
+        }
+
+        if (platforms != null) {
+            spec = spec.and(GameSpecifications.bySupportedPlatforms(platforms));
+        }
+
+        return spec;
+    }
+
+    private Specification<Game> buildSpecificationWithOrOperator(String title, SupportedPlatforms platforms) {
+        Specification<Game> spec = Specification.unrestricted();
+
+        if (StringUtils.hasLength(title)) {
+            spec = spec.or(GameSpecifications.byTitle(title));
+        }
+
+        if (platforms != null) {
+            spec = spec.or(GameSpecifications.bySupportedPlatforms(platforms));
+        }
+
+        return spec;
     }
 
 }
