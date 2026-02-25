@@ -156,4 +156,21 @@ public class GameService {
         return spec;
     }
 
+    // Usually we would have been done but Projections solved the problem.
+    // 1 --> class (GameRepresentation) (id, title, platforms)
+    // 2 --> call the game repository and fetch all the games (paged)
+    // 3 --> map the result (loop over the result from the DB, do the mapping, collect, return the result)
+
+    // Solution: Create an interface (GameRepresentation)
+    // create a method that will return a list of Game
+    //
+
+    public List<GameRepresentation1> getGameWithRep1(){
+        return gameRepository.findAllGames();
+    }
+
+    public List<GameRepresentation2> getGameWithRep2(){
+        return gameRepository.findAllGames2();
+    }
+
 }

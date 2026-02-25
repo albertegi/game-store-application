@@ -72,4 +72,24 @@ public interface GameRepository extends JpaRepository<Game, String>, JpaSpecific
     // implementing pageable
 
     Page<Game> findAllByCategoryName(String categoryName, Pageable pageable);
+
+
+    // Projections
+    @Query("""
+           SELECT g.id AS gameId,
+                  g.title AS gameTitle,
+                  g.supportedPlatforms
+                 FROM Game g
+           """)
+    List<GameRepresentation1> findAllGames();
+
+
+    @Query("""
+            SELECT g.title AS gameTitle,
+            g.category.name AS categoryName
+            FROM Game g
+            """)
+    List<GameRepresentation2> findAllGames2();
+
 }
+
