@@ -1,4 +1,4 @@
-package com.alvirg.store.gamerequest;
+package com.alvirg.store.gamedemand;
 
 import com.alvirg.store.common.BaseEntity;
 import com.alvirg.store.user.User;
@@ -11,11 +11,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class GameRequest extends BaseEntity {
+public class GameDemand extends BaseEntity {
     private String title;
 
     @Enumerated(value = EnumType.STRING)
-    private RequestStatus status = RequestStatus.PENDING;
+    private DemandStatus status = DemandStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

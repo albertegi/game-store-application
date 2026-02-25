@@ -1,20 +1,31 @@
 package com.alvirg.store.game;
 
+import com.alvirg.store.category.CategoryRepository;
 import com.alvirg.store.common.PageResponse;
 import com.alvirg.store.platform.Console;
+import com.alvirg.store.platform.Platform;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GameService {
     private final GameRepository gameRepository;
+    private final PlatformRepository platformRepository;
+    private final CategoryRepository categoryRepository;
+    private final GameMapper gameMapper;
 
     public void findCategoryById(String categoryId){
         var games = gameRepository.findAllByCategoryId(categoryId);
@@ -51,7 +62,7 @@ public class GameService {
         // create an object of Game: which may be the probe
         Game game = new Game();
         game.setTitle("The witcher III"); // It automatically handles case sensitivity: So in case in my DB --> the witcher iii, it will not return anything
-        game.setSupportedPlatforms(Console.PS);
+//        game.setSupportedPlatforms(Console.PS);
 
         // create the example of type Game
         Example<Game> example = Example.of(game);
@@ -65,7 +76,7 @@ public class GameService {
         // create an object of Game: which may be the probe
         Game game = new Game();
         game.setTitle("The witcher III"); // It automatically handles case sensitivity: So in case in my DB --> the witcher iii, it will not return anything
-        game.setSupportedPlatforms(Console.PS);
+//        game.setSupportedPlatforms(Console.PS);
 
         ExampleMatcher matcher = ExampleMatcher.matchingAll().withIgnoreCase();
 
@@ -79,7 +90,7 @@ public class GameService {
         // create an object of Game: which may be the probe
         Game game = new Game();
         game.setTitle("witcher"); // all games title containing witcher
-        game.setSupportedPlatforms(Console.PS); // ignoring case for this
+//        game.setSupportedPlatforms(Console.PS); // ignoring case for this
 
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
@@ -172,6 +183,74 @@ public class GameService {
 
     public List<GameRepresentation2> getGameWithRep2(){
         return gameRepository.findAllGames2();
+    }
+
+
+
+
+    public String save(final GameRequest gameRequest){
+
+
+        //Two Options for doing this (fetching)
+        // Option 1: --> Loop over the set of platforms and fetch them one by one from the DB
+        // e.g. select * from platform where console = 'PS'
+        // Option 2: --> mapping the platforms in the (request) to Platform (entity) and fetch all of them at once
+        // e.g. select * from platform where console in ('PS', 'XBOX')
+        // Option 2: --> is a better option
+        final List<Console> selectedConsoles = gameRequest.platforms()
+                .stream()
+                .map(p-> Console.valueOf(p))
+                .collect(Collectors.toList());
+
+        final List<Platform> platforms = platformRepository.findAllByConsoleIn(selectedConsoles);
+
+        // platform (gameReq) --> PS, XBOX, ABC
+        // platform (DB) --> PS, XBOX
+
+        if(platforms.size() !=selectedConsoles.size()){
+            log.info("Received a non supported platforms. Received: {} - Stored: {}", platforms, selectedConsoles);
+            // todo dedicated exp
+            throw new RuntimeException("One or more platforms are not supported");
+        }
+
+
+        // check if title exists
+        if (!gameRepository.existsByTitle(gameRequest.title())) {
+            log.info("Game already exists: {} ", gameRequest.title());
+            throw new RuntimeException("Game already exists");
+        }
+
+        // check if category exists
+        if(!categoryRepository.existsById(gameRequest.categoryId())){
+            log.info("Received a category that does not exist: {} ", gameRequest.categoryId());
+            // todo create a dedicated exp
+            throw new RuntimeException("Category does not exist");
+        }
+
+        final Game game = gameMapper.toGame(gameRequest);
+        game.setPlatforms(platforms);
+        final Game savedGame = gameRepository.save(game);
+
+        // todo do we need to assign the game to the selectedPlatforms? else leave it like this
+        return savedGame.getId();
+    }
+
+    public void updateGame(String gameId, GameRequest gameRequest){
+
+    }
+
+    public String uploadGameImage(MultipartFile file,  String gameId){
+        return null;
+    }
+
+    // the result should be paginated
+
+    public PageResponse<GameResponse> findAllGames(int page, int size){
+        return null;
+    }
+
+    public void deleteGame(String gameId){
+        return;
     }
 
 }

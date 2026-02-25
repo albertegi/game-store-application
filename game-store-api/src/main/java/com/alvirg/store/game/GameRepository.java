@@ -91,5 +91,6 @@ public interface GameRepository extends JpaRepository<Game, String>, JpaSpecific
             """)
     List<GameRepresentation2> findAllGames2();
 
+    boolean existsByTitle(String title);
 }
 

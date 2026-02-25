@@ -8,20 +8,21 @@ import com.alvirg.store.platform.Platform;
 import com.alvirg.store.wishlist.WishList;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 public class Game extends BaseEntity {
-    private String title;
 
-    @Enumerated(value = EnumType.STRING)
-    private Console supportedPlatforms;
+    @Column(nullable = false, unique = true)
+    private String title;
 
     private String coverPicture;
 
