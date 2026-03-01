@@ -1,6 +1,7 @@
 package com.alvirg.store.game;
 
 import com.alvirg.store.category.CategoryRepository;
+import com.alvirg.store.common.BaseEntity;
 import com.alvirg.store.common.PageResponse;
 import com.alvirg.store.platform.Console;
 import com.alvirg.store.platform.Platform;
@@ -12,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -188,7 +186,7 @@ public class GameService {
 
 
 
-    public String save(final GameRequest gameRequest){
+    public String saveGame(final GameRequest gameRequest){
 
 
         //Two Options for doing this (fetching)
@@ -236,6 +234,60 @@ public class GameService {
     }
 
     public void updateGame(String gameId, GameRequest gameRequest){
+        // check if the game exist by id
+        final Game game = gameRepository.findById(gameId)
+                .orElseThrow(()-> new RuntimeException("Game not found"));
+
+        // check if title exists
+        // we will do a double check in the updateGame method:
+        // check that the game tile from the request is different from the one stored in the database
+        if (!game.getTitle().equals(gameRequest.title()) && gameRepository.existsByTitle(gameRequest.title())) {
+            log.info("Game already exists: {} ", gameRequest.title());
+            throw new RuntimeException("Game already exists");
+        }
+
+        final List<Console> selectedConsoles = gameRequest.platforms()
+                .stream()
+                .map(p-> Console.valueOf(p))
+                .collect(Collectors.toList());
+
+        final List<Platform> platforms = platformRepository.findAllByConsoleIn(selectedConsoles);
+
+        if(platforms.size() !=selectedConsoles.size()){
+            log.info("Received a non supported platforms. Received: {} - Stored: {}", platforms, selectedConsoles);
+            // todo dedicated exp
+            throw new RuntimeException("One or more platforms are not supported");
+        }
+
+        final List<String> platformIds = platforms
+                .stream()
+                .map(Platform::getId)
+                .toList();
+
+
+        List<Platform> currentPlatforms = game.getPlatforms();
+
+        List<Platform> newPlatforms = platformRepository.findAllById(platformIds); // get the id from gameRequest but id is not in gameRequest we only have the list of platforms. we need to get the list of platforms and from there get the different ids
+
+        List<Platform> platformsToAdd = new ArrayList<>(newPlatforms);
+        platformsToAdd.removeAll(currentPlatforms);
+
+        List<Platform> platformsToRemove = new ArrayList<>(currentPlatforms);
+        platformsToRemove.removeAll(newPlatforms);
+
+        for(Platform platform: platformsToAdd){
+            game.addPlatform(platform);
+        }
+
+
+        for(Platform platform : platformsToRemove){
+            game.removePlatform(platform);
+        }
+
+        game.setTitle(gameRequest.title());
+        gameRepository.save(game);
+
+
 
     }
 
@@ -252,5 +304,7 @@ public class GameService {
     public void deleteGame(String gameId){
         return;
     }
+
+    // log aggregator
 
 }

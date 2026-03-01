@@ -34,7 +34,7 @@ public class Game extends BaseEntity {
     @OrderBy(value = "content") // ordering all your contents in game when getting the comments may be for a particular game
     private List<Comment> comments;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "game_platform",
             joinColumns = {
@@ -86,7 +86,15 @@ public class Game extends BaseEntity {
 // fetching and sending the whole data from db can be very slow
 // we need to get the page number and the size
 
+public void addPlatform(Platform platform){
+        this.platforms.add(platform);
+        platform.getGames().add(this);
+}
 
+public void removePlatform(Platform platform){
+        this.platforms.remove(platform);
+        platform.getGames().remove(this);
+}
 
 
 
