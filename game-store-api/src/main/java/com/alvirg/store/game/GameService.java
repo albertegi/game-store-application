@@ -7,6 +7,7 @@ import com.alvirg.store.platform.Console;
 import com.alvirg.store.platform.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class GameService {
     private final PlatformRepository platformRepository;
     private final CategoryRepository categoryRepository;
     private final GameMapper gameMapper;
+    private final ClientHttpRequestFactoryBuilder clientHttpRequestFactoryBuilder;
 
     public void findCategoryById(String categoryId){
         var games = gameRepository.findAllByCategoryId(categoryId);
@@ -48,8 +50,8 @@ public class GameService {
                 .content(pagedResult.getContent())
                 .totalElements(pagedResult.getNumberOfElements())
                 .totalPages(pagedResult.getTotalPages())
-                .last(pagedResult.isLast())
-                .first(pagedResult.isFirst())
+                .isLast(pagedResult.isLast())
+                .isFirst(pagedResult.isFirst())
                 .build();
     }
 
@@ -298,7 +300,21 @@ public class GameService {
     // the result should be paginated
 
     public PageResponse<GameResponse> findAllGames(int page, int size){
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Game> gamesPage = gameRepository.findAll(pageable);
+        List<GameResponse> gameResponses = gamesPage
+                .stream()
+                .map(this.gameMapper::toGameResponse)
+                .toList();
+        return PageResponse.<GameResponse>builder()
+                .content(gameResponses)
+                .pageNumber(gamesPage.getNumber())
+                .size(gamesPage.getSize())
+                .totalElements(gamesPage.getNumberOfElements())
+                .totalPages(gamesPage.getTotalPages())
+                .isLast(gamesPage.isLast())
+                .isFirst(gamesPage.isFirst())
+                .build();
     }
 
     public void deleteGame(String gameId){

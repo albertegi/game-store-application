@@ -17,6 +17,6 @@ public class PageResponse<T>{
     private int size;
     private int totalElements;
     private int totalPages;
-    private boolean last;
-    private boolean first;
+    private boolean isLast;
+    private boolean isFirst;
 }
