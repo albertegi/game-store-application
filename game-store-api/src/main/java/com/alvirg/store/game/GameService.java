@@ -1,10 +1,12 @@
 package com.alvirg.store.game;
 
 import com.alvirg.store.category.CategoryRepository;
+import com.alvirg.store.comment.CommentRepository;
 import com.alvirg.store.common.BaseEntity;
 import com.alvirg.store.common.PageResponse;
 import com.alvirg.store.platform.Console;
 import com.alvirg.store.platform.Platform;
+import com.alvirg.store.wishlist.WishListRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
@@ -23,9 +25,11 @@ import java.util.stream.Collectors;
 public class GameService {
     private final GameRepository gameRepository;
     private final PlatformRepository platformRepository;
+    private final CommentRepository commentRepository;
+    private final WishListRepository wishListRepository;
     private final CategoryRepository categoryRepository;
     private final GameMapper gameMapper;
-    private final ClientHttpRequestFactoryBuilder clientHttpRequestFactoryBuilder;
+//    private final ClientHttpRequestFactoryBuilder clientHttpRequestFactoryBuilder;
 
     public void findCategoryById(String categoryId){
         var games = gameRepository.findAllByCategoryId(categoryId);
@@ -317,10 +321,66 @@ public class GameService {
                 .build();
     }
 
-    public void deleteGame(String gameId){
+    public void deleteGame(String gameId, boolean confirm){
+
+        // Option 1: check if the game exists
+        // Option 2: just delete: will not cause an issue if the game does not exist
+
+
+
+        // todo check the comments
+        long commentsCount = commentRepository.countByGameId(gameId);
+        long wishListCount = wishListRepository.countByGameId(gameId);
+
+        final List<String> warnings = new ArrayList<>();
+
+        if(commentsCount > 0){
+            warnings.add("Comment count is greater than 0");
+            System.out.println("The current game has comments: " + commentsCount);
+        }
+        if(wishListCount > 0){
+            warnings.add("Wish list count is greater than 0");
+            System.out.println("The current game has wishlist: " + wishListCount);
+        }
+
+        if(warnings.size() > 0 && !confirm){
+            // todo add a custom exception
+            throw new RuntimeException("One or more warnings");
+        }
+
+        gameRepository.deleteById(gameId);
+
+        //todo un-attach or unassign the current game from the wishlist
+
+        // todo check the wishlist
+
+
+        // check the relationships (The important relationship)
         return;
     }
 
     // log aggregator
+
+    /*
+        different schools of taught in handling exceptions
+        (1) Exception per scenario :
+        -> GameAlreadyExistsException
+        -> GamePlatformNotSupported
+        -> GameDeletionException
+        (Too much leading to 100 of exceptions not recommended)
+
+        (2) Exception per domain
+        -> GameException
+        -> GameValidationException
+        (Recommended few exceptions grouped by domain)
+
+        (3) Two types of exceptions
+        -> Business Exception - Business Code, Error Message, Source (where the exception was thrown), Reason
+        4 XX categories
+        -> Technical Exception - Error Code, Error Message
+        5 XX categories
+        Rabbit MQ is down
+        Something no related to the business logic
+     */
 
 }

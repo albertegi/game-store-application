@@ -30,7 +30,7 @@ public class Game extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", orphanRemoval = true)
     @OrderBy(value = "content") // ordering all your contents in game when getting the comments may be for a particular game
     private List<Comment> comments;
 
